@@ -37,15 +37,28 @@ async function run() {
 
         // jobs api
         app.get('/jobs', async(req, res)=>{
-            const cursor = jobsCollection.find();
+            // specific data find by email
+            const email = req.query.email;
+            const query = {};
+            if(email){
+                query.hr_email = email;
+            }
+            const cursor = jobsCollection.find(query);
             const result = await cursor.toArray();
             res.send(result)
-        })
+        });
+        // could be done
+
 
         app.get('/jobs/:id', async(req, res)=>{
             const id = req.params.id;
             const query = {_id: new ObjectId(id)};
             const result = await jobsCollection.findOne(query);
+            res.send(result)
+        });
+        app.post('/jobs', async(req, res)=>{
+            const newJob = req.body;
+            const result = await jobsCollection.insertOne(newJob);
             res.send(result)
         })
 
@@ -53,7 +66,7 @@ async function run() {
 
         app.post('/applications', async(req, res)=>{
             const application = req.body;
-            console.log(application)
+            // console.log(application)
             const result = await applicationCollections.insertOne(application);
             res.send(result)
         });
